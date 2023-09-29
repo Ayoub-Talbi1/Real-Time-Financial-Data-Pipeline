@@ -1,0 +1,91 @@
+version: "3.3"
+services:
+  spark-master:
+    image: cluster-apache-spark:3.0.2
+    ports:
+      - "9090:8080"
+      - "7077:7077"
+    environment:
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_WORKLOAD=master
+    networks:
+      - realtime
+
+  spark-worker-a:
+    image: cluster-apache-spark:3.0.2
+    ports:
+      - "9091:8080"
+      - "7000:7000"
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_DRIVER_MEMORY=1G
+      - SPARK_EXECUTOR_MEMORY=1G
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-a
+    networks:
+      - realtime
+
+  spark-worker-b:
+    image: cluster-apache-spark:3.0.2
+    ports:
+      - "9092:8080"
+      - "7001:7000"
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_DRIVER_MEMORY=1G
+      - SPARK_EXECUTOR_MEMORY=1G
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-b
+    networks:
+      - realtime
+
+  demo-database:
+    image: postgres:11.7-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=casa1234
+    networks:
+      - realtime
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka-container
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-container:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    networks:
+      - realtime
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper-container
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - realtime
+
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra-container
+    ports:
+      - "9042:9042"
+    networks:
+      - realtime
+
+networks:
+  realtime:
+    driver: bridge
