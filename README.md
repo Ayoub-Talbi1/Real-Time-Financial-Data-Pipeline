@@ -2,6 +2,9 @@
 
 This project sets up a real-time data pipeline that captures financial data from Yahoo Finance via WebSocket, processes it using Apache Spark Structured Streaming, and stores the results in Apache Cassandra. It utilizes Docker for containerization and orchestration.
 
+![Diagramme sans nom drawio](https://github.com/Ayoub-Talbi1/Real-Time-Financial-Data-Pipeline/assets/86127094/4f300f3a-690f-4ccc-a1c9-7adc53054fce)
+
+
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
