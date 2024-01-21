@@ -51,7 +51,7 @@ def write_to_cassandra(df, epoch_id):
 
 # Write data to Cassandra using the foreach sink
 query = result_df.writeStream \
-    .outputMode("update") \
+    .outputMode("append") \
     .foreachBatch(write_to_cassandra) \
     .start()
 
